@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+{% block content %}
+
+    <div class="col-sm-12">
+        <div class="card card-table">
+            <div class="card-body">
+                <p class="text-right">
+                    <button class="btn btn-outline-info" onclick="window.print()"><i class="fas fa-print"></i></button>
+                </p>
+
+                <div class="table-responsive">
+                    <table id="table_id" class="table table-hover table-center mb-0">
+                        <thead>
+                        <tr>
+                            <th class="text-center">#</th>
+                            <th class="text-center">Plan</th>
+                            <th class="text-center">Applicant</th>
+                            <th class="text-center">Contact No.</th>
+                            <th class="text-center">Progress</th>
+                            {% for i in application %}
+                                {% if i.progress != 'Phase 7: Completed' %}
+                                    <th class="text-center">Action</th>
+                                {% endif %}
+                            {% endfor %}
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for i in application %}
+                            <tr>
+                                <td class="text-center">{{ forloop.counter }}</td>
+                                <td class="text-center"><img src="/{{ i.plan.image }}" height="100" width="100"></td>
+                                <td class="text-center">{{ i.users.admin.first_name }} </td>
+                                <td class="text-center"><i
+                                        class="fas fa-phone"></i>&nbsp;{{ i.users.phone }}  </td>
+                                <td class="text-center"><span
+                                        class="badge badge-primary">{{ i.progress }}</span></td>
+                                {% if i.progress != 'Phase 7: Completed' %}
+                                    <td class="text-center">
+                                        <div class="actions">
+                                            <button type="button" class="btn btn-sm bg-success"
+                                                    data-toggle="modal"
+                                                    data-target="#viewticket-{{ forloop.counter }}">Update Progress
+                                            </button>
+                                        </div>
+                                    </td>
+                                {% endif %}
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    {% for i in application %}
+        <div class="modal fade" id="viewticket-{{ forloop.counter }}">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Add Plan</h5>
+                        <button type="button" class="close" data-dismiss="modal"><span>&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body align-items-lg-center">
+                        <form method="post" action="{% url 'update_progress' %}">
+                            {% csrf_token %}
+                            <div class="row g-2">
+                                <div class="col-sm-11">
+                                    <div class="form-group">
+                                        <input type="text" class="form-control" name="application_id"
+                                               value="{{ i.id }}" hidden>
+                                        <label>Choose Progress</label>
+                                        <select class="form-control" name="progress" required>
+                                            <option>---Choose a progress---</option>
+                                            <option value="Phase 1: Acquiring Materials">Phase 1: Acquiring Materials
+                                            </option>
+                                            <option value="Phase 2: Laying the foundation">Phase 2: Laying the
+                                                foundation
+                                            </option>
+                                            <option value="Phase 3: Building Walls of house">Phase 3: Building Walls of
+                                                house
+                                            </option>
+                                            <option value="Phase 4: Roofing">Phase 4: Roofing</option>
+                                            <option value="Phase 5: Exterior finish">Phase 5: Exterior finish</option>
+                                            <option value="Phase 6: Interior finish">Phase 6: Interior finish</option>
+                                            <option value="Phase 7: Completed">Phase 7: Completed</option>
+
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <br>
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-secondary">Submit</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+
+{% endblock %}
